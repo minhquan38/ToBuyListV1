@@ -2,8 +2,11 @@
 using ToBuyListV1;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer("data source=Quan\\MSSQLSERVER03;initial catalog=ToBuyList;trusted_connection=true;TrustServerCertificate=true"));
 
 builder.Services
     .AddRazorPages().Services
@@ -11,8 +14,8 @@ builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie().Services
     .AddAuthentication().AddGoogle(options =>
     {
-        options.ClientId = "903471121943-q0n3fqpnl9cqn03cml3hkcveg29a7420.apps.googleusercontent.com";
-        options.ClientSecret = "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";
+        options.ClientId = builder.Configuration["Google:ClientId"];
+        options.ClientSecret = builder.Configuration["Google:ClientSecret"];
         options.ClaimActions.MapJsonKey("urn:google:profile", "link");
         options.ClaimActions.MapJsonKey("urn:google:image", "picture");
     });
